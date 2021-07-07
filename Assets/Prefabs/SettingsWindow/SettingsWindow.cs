@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using static GlobalVariables;
@@ -8,7 +6,7 @@ public class SettingsWindow : MonoBehaviour
 {
     Player player;
 
-    [SerializeField] GameObject settingsWindowCanvas;
+    [SerializeField] GameObject settingsCanvas;
     [SerializeField] GameObject mainCanvas;
 
     [SerializeField] GameObject soundsIconDisabled;
@@ -44,7 +42,7 @@ public class SettingsWindow : MonoBehaviour
     #region Public Methods
     public void CloseSettingsWindow()
     {
-        settingsWindowCanvas.SetActive(false);
+        settingsCanvas.SetActive(false);
         mainCanvas.SetActive(true);
     }
 

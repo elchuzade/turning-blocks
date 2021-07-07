@@ -3,6 +3,8 @@ using static GlobalVariables;
 
 public class Player : MonoBehaviour
 {
+    public int coins = 0;
+    public int diamonds = 0;
     public string playerName = "";
     public bool playerCreated = false;
     public bool nameChanged = false;
@@ -34,6 +36,9 @@ public class Player : MonoBehaviour
 
     public void ResetPlayer()
     {
+        coins = 0;
+        diamonds = 0;
+
         playerName = "";
         playerCreated = false;
         nameChanged = false;
@@ -54,6 +59,9 @@ public class Player : MonoBehaviour
             ResetPlayer();
             data = SaveSystem.LoadPlayer();
         }
+
+        coins = data.coins;
+        diamonds = data.diamonds;
 
         playerName = data.playerName;
         playerCreated = data.playerCreated;

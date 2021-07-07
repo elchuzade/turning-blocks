@@ -7,8 +7,11 @@ public class MainStatus : MonoBehaviour
     Navigator navigator;
     Player player;
 
-    [SerializeField] GameObject settingsWindowCanvas;
+    [SerializeField] GameObject settingsCanvas;
     [SerializeField] GameObject mainCanvas;
+
+    [SerializeField] GameObject privacyPolicyCanvas;
+    [SerializeField] GameObject quitCanvas;
 
     void Start()
     {
@@ -17,11 +20,38 @@ public class MainStatus : MonoBehaviour
 
         player.LoadPlayer();
         //player.ResetPlayer();
+
+        if (player.privacyPolicyAccepted)
+        {
+            //leaderboardButton.GetComponent<Button>().onClick.AddListener(() => ClickLeaderboardButton());
+
+            if (!player.playerCreated)
+            {
+                //server.CreatePlayer(player);
+            }
+            else
+            {
+                //server.SavePlayerData(player);
+            }
+        }
+        else
+        {
+            //leaderboardButton.GetComponent<Button>().onClick.AddListener(() => ShowPrivacyPolicy());
+
+            if (!player.privacyPolicyDeclined)
+            {
+                ShowPrivacyPolicyWindow();
+            }
+        }
     }
 
     void Update()
     {
-        
+        // Android back button reacts as escape
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ShowQuitWindow();
+        }
     }
 
     #region Public Methods
@@ -33,7 +63,7 @@ public class MainStatus : MonoBehaviour
     public void ClickSettingsButton()
     {
         mainCanvas.SetActive(false);
-        settingsWindowCanvas.SetActive(true);
+        settingsCanvas.SetActive(true);
     }
 
     public void ClickPlayButton()
@@ -43,6 +73,16 @@ public class MainStatus : MonoBehaviour
     #endregion
 
     #region Private Methods
+    void ShowPrivacyPolicyWindow()
+    {
+        mainCanvas.SetActive(false);
+        privacyPolicyCanvas.SetActive(true);
+    }
 
+    void ShowQuitWindow()
+    {
+        mainCanvas.SetActive(false);
+        quitCanvas.SetActive(true);
+    }
     #endregion
 }
