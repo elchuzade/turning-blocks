@@ -9,9 +9,11 @@ public class MainStatus : MonoBehaviour
 
     [SerializeField] GameObject settingsCanvas;
     [SerializeField] GameObject mainCanvas;
-
     [SerializeField] GameObject privacyPolicyCanvas;
     [SerializeField] GameObject quitCanvas;
+    [SerializeField] GameObject gameModesCanvas;
+
+    [SerializeField] Scoreboard scoreboard;
 
     void Start()
     {
@@ -43,6 +45,9 @@ public class MainStatus : MonoBehaviour
                 ShowPrivacyPolicyWindow();
             }
         }
+
+        scoreboard.SetCoins(player.coins, false);
+        scoreboard.SetDiamonds(player.diamonds, false);
     }
 
     void Update()
@@ -55,9 +60,10 @@ public class MainStatus : MonoBehaviour
     }
 
     #region Public Methods
-    public void ClickModesButton()
+    public void ClickGameModesButton()
     {
-        
+        mainCanvas.SetActive(false);
+        gameModesCanvas.SetActive(true);
     }
 
     public void ClickSettingsButton()

@@ -54,6 +54,7 @@ public class SettingsWindow : MonoBehaviour
         SwitchLanguage();
         languageScrollbar.value = Mathf.Abs(GetLanguageScrollbarValue() - 0.01f);
     }
+
     public void ClickRightArrow()
     {
         languageIndex++;
@@ -61,6 +62,7 @@ public class SettingsWindow : MonoBehaviour
         SwitchLanguage();
         languageScrollbar.value = Mathf.Abs(GetLanguageScrollbarValue() - 0.01f);
     }
+
     public void SwipeLanguage(float value)
     {
         languageIndex = Mathf.Clamp((int)(totalLanguages * value), 0, totalLanguages - 1);
@@ -68,6 +70,7 @@ public class SettingsWindow : MonoBehaviour
         SwitchLanguage();
         CheckLanguageArrows();
     }
+
     // SOUNDS & HAPTICS
     public void ClickSoundsButton()
     {

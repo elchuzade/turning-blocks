@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public bool privacyPolicyAccepted = false;
     public bool privacyPolicyDeclined = false;
     public Languages language = Languages.english;
+    public GameModes gameMode = GameModes.classical;
     public bool sounds = false;
     public bool haptics = false;
 
@@ -38,13 +39,13 @@ public class Player : MonoBehaviour
     {
         coins = 0;
         diamonds = 0;
-
         playerName = "";
         playerCreated = false;
         nameChanged = false;
         privacyPolicyAccepted = false;
         privacyPolicyDeclined = false;
         language = Languages.english;
+        gameMode = GameModes.classical;
         sounds = false;
         haptics = false;
 
@@ -62,13 +63,13 @@ public class Player : MonoBehaviour
 
         coins = data.coins;
         diamonds = data.diamonds;
-
         playerName = data.playerName;
         playerCreated = data.playerCreated;
         nameChanged = data.nameChanged;
         privacyPolicyAccepted = data.privacyPolicyAccepted;
         privacyPolicyDeclined = data.privacyPolicyDeclined;
         language = data.language;
+        gameMode = data.gameMode;
         sounds = data.sounds;
         haptics = data.haptics;
     }
