@@ -15,6 +15,7 @@ public class MainStatus : MonoBehaviour
 
     [SerializeField] Scoreboard scoreboard;
 
+
     void Start()
     {
         navigator = FindObjectOfType<Navigator>();
