@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using static GlobalVariables;
 
 public class MainStatus : MonoBehaviour
 {
@@ -12,9 +11,6 @@ public class MainStatus : MonoBehaviour
     [SerializeField] GameObject privacyPolicyCanvas;
     [SerializeField] GameObject quitCanvas;
     [SerializeField] GameObject gameModesCanvas;
-
-    [SerializeField] Scoreboard scoreboard;
-
 
     void Start()
     {
@@ -46,9 +42,6 @@ public class MainStatus : MonoBehaviour
                 ShowPrivacyPolicyWindow();
             }
         }
-
-        scoreboard.SetCoins(player.coins, false);
-        scoreboard.SetDiamonds(player.diamonds, false);
     }
 
     void Update()

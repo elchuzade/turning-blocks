@@ -5,7 +5,7 @@ public class Navigator : MonoBehaviour
 {
     public void LoadGameScene()
     {
-
+        SceneManager.LoadScene("ClassicalModeScene");
     }
 
     public void LoadMainScene()

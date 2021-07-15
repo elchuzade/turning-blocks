@@ -5,6 +5,8 @@ using static GlobalVariables;
 public class SettingsWindow : MonoBehaviour
 {
     Player player;
+    Translator translator;
+
     [SerializeField] MainStatus mainStatus;
 
     [SerializeField] GameObject settingsCanvas;
@@ -21,15 +23,11 @@ public class SettingsWindow : MonoBehaviour
     int languageIndex;
     Languages currentLanguage;
 
-    // For language buttons
-    [SerializeField] TextButton[] allTextButtons;
-
     void Start()
     {
+        translator = FindObjectOfType<Translator>();
         player = FindObjectOfType<Player>();
         player.LoadPlayer();
-
-        SetAllLanguageButtons();
 
         SetInitialSounds();
         SetInitialHaptics();
@@ -45,14 +43,6 @@ public class SettingsWindow : MonoBehaviour
     }
 
     #region Public Methods
-    public void SetAllLanguageButtons()
-    {
-        for (int i = 0; i < allTextButtons.Length; i++)
-        {
-            allTextButtons[i].SetButtonLanguage();
-        }
-    }
-
     public void CloseSettingsWindow()
     {
         settingsCanvas.SetActive(false);
@@ -145,8 +135,8 @@ public class SettingsWindow : MonoBehaviour
     {
         player.language = currentLanguage;
         player.SavePlayer();
-        // TODO: Change All Words in this menu to current language
-        SetAllLanguageButtons();
+        
+        translator.SetLanguage(currentLanguage);
     }
 
     float GetLanguageScrollbarValue()

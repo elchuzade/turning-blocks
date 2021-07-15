@@ -5,6 +5,7 @@ using static GlobalVariables;
 public class GameModesWindow : MonoBehaviour
 {
     Player player;
+    Translator translator;
 
     [SerializeField] GameObject gameModesCanvas;
     [SerializeField] GameObject mainCanvas;
@@ -18,6 +19,7 @@ public class GameModesWindow : MonoBehaviour
 
     void Start()
     {
+        translator = FindObjectOfType<Translator>();
         player = FindObjectOfType<Player>();
         player.LoadPlayer();
         //player.ResetPlayer();
@@ -86,6 +88,7 @@ public class GameModesWindow : MonoBehaviour
         player.gameMode = currentGameMode;
         player.SavePlayer();
         // TODO: Change All Words in this menu to current language
+        translator.SetGameMode(currentGameMode);
     }
 
     float GetGameModeScrollbarValue()

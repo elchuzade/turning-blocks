@@ -14,6 +14,9 @@ public class Player : MonoBehaviour
     public GameModes gameMode = GameModes.classical;
     public bool sounds = false;
     public bool haptics = false;
+    public int classicalHighScore = 0;
+    public int infiniteHighScore = 0;
+    public int randomHighScore = 0;
 
     void Awake()
     {
@@ -48,6 +51,9 @@ public class Player : MonoBehaviour
         gameMode = GameModes.classical;
         sounds = false;
         haptics = false;
+        classicalHighScore = 0;
+        infiniteHighScore = 0;
+        randomHighScore = 0;
 
         SaveSystem.SavePlayer(this);
     }
@@ -72,5 +78,8 @@ public class Player : MonoBehaviour
         gameMode = data.gameMode;
         sounds = data.sounds;
         haptics = data.haptics;
+        classicalHighScore = data.classicalHighScore;
+        infiniteHighScore = data.infiniteHighScore;
+        randomHighScore = data.randomHighScore;
     }
 }

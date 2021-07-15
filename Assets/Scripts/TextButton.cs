@@ -4,8 +4,6 @@ using static GlobalVariables;
 
 public class TextButton : MonoBehaviour
 {
-    Player player;
-
     [SerializeField] Sprite buttonEnglish;
     [SerializeField] Sprite buttonTurkish;
     [SerializeField] Sprite buttonSpanish;
@@ -14,19 +12,11 @@ public class TextButton : MonoBehaviour
 
     Image buttonImage;
 
-    void Start()
-    {
-        SetButtonLanguage();
-    }
-
-    public void SetButtonLanguage()
+    public void SetButtonLanguage(Languages language)
     {
         buttonImage = GetComponent<Image>();
 
-        player = FindObjectOfType<Player>();
-        player.LoadPlayer();
-
-        switch (player.language)
+        switch (language)
         {
             case Languages.english:
                 buttonImage.sprite = buttonEnglish;

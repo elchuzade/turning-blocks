@@ -15,6 +15,9 @@ public class PlayerData
     public GameModes gameMode = GameModes.classical;
     public bool sounds = false;
     public bool haptics = false;
+    public int classicalHighScore = 0;
+    public int infiniteHighScore = 0;
+    public int randomHighScore = 0;
 
     public PlayerData(Player player)
     {
@@ -29,5 +32,8 @@ public class PlayerData
         gameMode = player.gameMode;
         sounds = player.sounds;
         haptics = player.haptics;
+        classicalHighScore = player.classicalHighScore;
+        infiniteHighScore = player.infiniteHighScore;
+        randomHighScore = player.randomHighScore;
     }
 }
