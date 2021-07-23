@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BlockPart : MonoBehaviour
 {
-    ClassicalModeStatus levelStatus;
+    LevelStatus levelStatus;
     Cell[] allCells;
 
     public GameObject snapPlaceholder;
@@ -18,7 +18,7 @@ public class BlockPart : MonoBehaviour
     void Start()
     {
         allCells = FindObjectsOfType<Cell>();
-        levelStatus = FindObjectOfType<ClassicalModeStatus>();
+        levelStatus = FindObjectOfType<LevelStatus>();
 
         rb = GetComponent<Rigidbody2D>();
     }

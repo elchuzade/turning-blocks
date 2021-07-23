@@ -4,15 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using static GlobalVariables;
 
-public class ClassicalModeStatus : MonoBehaviour
+public class LevelStatus : MonoBehaviour
 {
-    Navigator navigator;
-    Translator translator;
     Player player;
+    GameOverWindow gameOverWindow;
 
     Cell[] cells;
     [SerializeField] GameObject scorePrefab;
-    [SerializeField] GameObject canvas;
+    [SerializeField] GameObject levelCanvas;
     [SerializeField] Text timeText;
     [SerializeField] Text scoreText;
     [SerializeField] GameObject timerIcon;
@@ -20,6 +19,7 @@ public class ClassicalModeStatus : MonoBehaviour
     [SerializeField] List<GameObject> aligners = new List<GameObject>();
     List<GameObject> destroyBlockParts = new List<GameObject>();
 
+    [SerializeField] GameObject gameOverCanvas;
     [SerializeField] GameObject palette;
 
     public Transform blocksParent;
@@ -38,18 +38,25 @@ public class ClassicalModeStatus : MonoBehaviour
     // To stop multiple shapes dragging
     public bool blockDragging = false;
 
-    int totalScore;
+    public Block dragginBlock;
+
+    public int totalScore = 0;
     // Score that we get when aligning blocks
     int score;
-    int seconds = 120; // Seconds
+    int seconds = 10; // Seconds
     float timer = 0;
-    bool gameOver;
+    public bool gameOver;
+
+    // For delayed game over window to compare count of idle block parts with all block parts
+    public bool allBlockPartsFell = true;
+
+    // Incase stuck in the swiping while time is up
+    bool gameOverPending;
 
     void Start()
     {
-        translator = FindObjectOfType<Translator>();
-        navigator = FindObjectOfType<Navigator>();
         player = FindObjectOfType<Player>();
+        gameOverWindow = FindObjectOfType<GameOverWindow>();
 
         player.LoadPlayer();
 
@@ -72,30 +79,47 @@ public class ClassicalModeStatus : MonoBehaviour
             if (rotating)
             {
                 rotating = false;
+                if (allMapBlockParts.Count > 0)
+                {
+                    allBlockPartsFell = false;
+                }
                 // Finished rotating make blocks fall
                 MoveBlockPartsDown(true);
             }
         }
-        // TimeScale is increased by 4. so all time related things should be increased by 4
-        if (!gameOver)
+        if (!gameOverPending)
         {
-            if (timer >= 1 * 4)
+            // TimeScale is increased by 4. so all time related things should be increased by 4
+            if (!gameOver)
             {
-                timer = 0;
-                seconds--;
-                SetTimer();
-            }
-            else
-            {
-                timer += Time.deltaTime;
+                if (timer >= 1 * 4)
+                {
+                    timer = 0;
+                    seconds--;
+                    SetTimer();
+                }
+                else
+                {
+                    timer += Time.deltaTime;
+                }
             }
         }
     }
 
     #region Public Methods
-    public void ClickHomeButton()
+    public void DropBlockOnMap()
     {
-        navigator.LoadMainScene();
+        dragginBlock = null;
+        blockDragging = false;
+        swipeUnlocked = false;
+        allBlockPartsFell = false;
+    }
+
+    public void AddSeconds(int _seconds)
+    {
+        seconds += _seconds;
+        gameOver = false;
+        SetTimer();
     }
 
     public void AddIdleBlockPart(GameObject part)
@@ -103,12 +127,24 @@ public class ClassicalModeStatus : MonoBehaviour
         if (!idleBlockParts.Contains(part))
         {
             idleBlockParts.Add(part);
+            allBlockPartsFell = false;
             if (idleBlockParts.Count == allMapBlockParts.Count)
             {
                 // Refresh free/occupied status of every cell when all blocks are idle
                 idleBlockParts.Clear();
+                allBlockPartsFell = true;
                 CheckCellsFreeStatus();
                 ChectAlignedCells();
+
+                if (gameOverPending && seconds == 0)
+                {
+                    gameOverPending = false;
+                    ShowGameOverWindow();
+                } else
+                {
+                    // While falling down you earned extra seconds, so no game over yet
+                    gameOverPending = false;
+                }
             }
         }
     }
@@ -193,33 +229,33 @@ public class ClassicalModeStatus : MonoBehaviour
                 seconds += 1;
                 break;
             case 20:
-                totalScore += 20;
-                score = 20;
-                seconds += 2;
-                break;
-            case 30:
-                totalScore += 20;
+                totalScore += 30;
                 score = 30;
                 seconds += 3;
                 break;
-            case 40:
-                totalScore += 40;
-                score = 40;
-                seconds += 4;
-                break;
-            case 50:
-                totalScore += 50;
-                score = 50;
-                seconds += 5;
-                break;
-            case 60:
+            case 30:
                 totalScore += 60;
                 score = 60;
                 seconds += 6;
                 break;
+            case 40:
+                totalScore += 100;
+                score = 100;
+                seconds += 10;
+                break;
+            case 50:
+                totalScore += 150;
+                score = 150;
+                seconds += 15;
+                break;
+            case 60:
+                totalScore += 200;
+                score = 200;
+                seconds += 20;
+                break;
         }
         GameObject newScore = Instantiate(scorePrefab, palette.transform.position, Quaternion.identity);
-        newScore.transform.SetParent(canvas.transform);
+        newScore.transform.SetParent(levelCanvas.transform);
         newScore.GetComponent<NewScore>().SetScore(score);
         SetTimer();
         SetScore();
@@ -246,8 +282,35 @@ public class ClassicalModeStatus : MonoBehaviour
 
         if (seconds == 0)
         {
-            Debug.Log("game over");
+            // Incase some block is being dragged
+            if (dragginBlock != null)
+            {
+                dragginBlock.ReturnToInitialPosition();
+            }
+
+            if (!rotating && allBlockPartsFell)
+            {
+                ShowGameOverWindow();
+            } else
+            {
+                gameOverPending = true;
+            }
         }
+    }
+
+    void ShowGameOverWindow()
+    {
+        gameOver = true;
+        gameOverCanvas.SetActive(true);
+        palette.SetActive(false);
+        levelCanvas.SetActive(false);
+
+        if (gameOverWindow == null)
+        {
+            gameOverWindow = FindObjectOfType<GameOverWindow>();
+        }
+
+        gameOverWindow.SetScores();
     }
 
     void MoveAllBlockPartsDown()
@@ -326,7 +389,6 @@ public class ClassicalModeStatus : MonoBehaviour
 
     void DestroyAlignedBlocks()
     {
-        Debug.Log(destroyBlockParts.Count);
         if (destroyBlockParts.Count > 0)
         {
             GiveScore();

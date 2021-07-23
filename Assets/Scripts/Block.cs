@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Block : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
 {
-    ClassicalModeStatus levelStatus;
+    LevelStatus levelStatus;
     public GameObject blockParts;
 
     // This is to reinstantiate a new block at its place when this is placed on a map
@@ -24,7 +24,7 @@ public class Block : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHan
 
     void Start()
     {
-        levelStatus = FindObjectOfType<ClassicalModeStatus>();
+        levelStatus = FindObjectOfType<LevelStatus>();
     }
 
     void Update()
@@ -36,6 +36,28 @@ public class Block : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHan
     }
 
     #region Public Methods
+    public void ReturnToInitialPosition()
+    {
+        levelStatus.dragginBlock = null;
+        // Drag complete, allow dragging new shape
+        levelStatus.blockDragging = false;
+        dragging = false;
+
+        levelStatus.swipeUnlocked = true;
+
+        transform.SetParent(initialParent);
+        transform.position = initialPosition;
+        Shrink();
+
+        for (int i = 0; i < blockParts.transform.childCount; i++)
+        {
+            // Make a block that has just been placed have the same order with other blocks
+            blockParts.transform.GetChild(i).Find("Icon").GetComponent<SpriteRenderer>().sortingOrder = 4;
+            // Make a block that is new appear above all other blocks
+            blockParts.transform.GetChild(i).GetComponent<BlockPart>().dragging = false;
+        }
+    }
+
     public void TurnBlock()
     {
         angle -= 90;
@@ -64,12 +86,11 @@ public class Block : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHan
     {
         if (levelStatus.swipeUnlocked && dragging && levelStatus.blockDragging)
         {
-            // Drag complete, allow dragging new shape
-            levelStatus.blockDragging = false;
-            dragging = false;
             if (conflictBlockParts.Count == 0 && outsideMapLimitBlockParts.Count == 0)
             {
-                levelStatus.swipeUnlocked = false;
+                levelStatus.DropBlockOnMap();
+                // Drag complete, allow dragging new shape
+                dragging = false;
                 for (int i = 0; i < blockParts.transform.childCount; i++)
                 {
                     blockParts.transform.GetChild(i).GetComponent<BlockPart>().DropBlockOnMap();
@@ -80,27 +101,16 @@ public class Block : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHan
             else
             {
                 // Drag failed, return to initial position and allow swiping again
-                levelStatus.swipeUnlocked = true;
-
-                transform.SetParent(initialParent);
-                transform.position = initialPosition;
-                Shrink();
-
-                for (int i = 0; i < blockParts.transform.childCount; i++)
-                {
-                    // Make a block that has just been placed have the same order with other blocks
-                    blockParts.transform.GetChild(i).Find("Icon").GetComponent<SpriteRenderer>().sortingOrder = 4;
-                    // Make a block that is new appear above all other blocks
-                    blockParts.transform.GetChild(i).GetComponent<BlockPart>().dragging = false;
-                }
+                ReturnToInitialPosition();
             }
         }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (levelStatus.swipeUnlocked && !levelStatus.blockDragging)
+        if (!levelStatus.gameOver && levelStatus.swipeUnlocked && !levelStatus.blockDragging)
         {
+            levelStatus.dragginBlock = this;
             // Drag started, block dragging new shape until this one snaps or returns
             levelStatus.blockDragging = true;
             dragging = true;

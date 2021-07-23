@@ -5,11 +5,11 @@ using static GlobalVariables;
 // This class is used to manage the grid UI meaning position the tails, resize them, and create the grid seen by the user
 public class PaletteSwiper : MonoBehaviour, IDragHandler, IEndDragHandler
 {
-    ClassicalModeStatus levelStatus;
+    LevelStatus levelStatus;
 
     void Start()
     {
-        levelStatus = FindObjectOfType<ClassicalModeStatus>();
+        levelStatus = FindObjectOfType<LevelStatus>();
     }
 
     #region  IDragHandler - IEndDragHandler
