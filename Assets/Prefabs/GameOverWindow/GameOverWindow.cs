@@ -32,7 +32,7 @@ public class GameOverWindow : MonoBehaviour
     }
 
     #region Public Methods
-    public void ClickHomeWindow()
+    public void ClickHomeButton()
     {
         // Save all data and Load main scene
         if (player.gameMode == GameModes.classical)

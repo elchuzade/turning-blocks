@@ -9,6 +9,15 @@ public class LevelStatus : MonoBehaviour
     Player player;
     GameOverWindow gameOverWindow;
 
+    // To change the color of header based on the game mode
+    [SerializeField] GameObject header;
+
+    Color32 infiniteColor = new Color32(189, 59, 160, 255);
+    Color32 randomColor = new Color32(59, 160, 189, 255);
+
+    // This is to hide when playing random game mode
+    [SerializeField] GameObject swipeArrows;
+
     Cell[] cells;
     [SerializeField] GameObject scorePrefab;
     [SerializeField] GameObject levelCanvas;
@@ -43,7 +52,7 @@ public class LevelStatus : MonoBehaviour
     public int totalScore = 0;
     // Score that we get when aligning blocks
     int score;
-    int seconds = 10; // Seconds
+    int seconds = 1000; // Seconds
     float timer = 0;
     public bool gameOver;
 
@@ -52,6 +61,9 @@ public class LevelStatus : MonoBehaviour
 
     // Incase stuck in the swiping while time is up
     bool gameOverPending;
+
+    // To stop double or tripple rotations
+    bool randomRotationReady;
 
     void Start()
     {
@@ -65,6 +77,8 @@ public class LevelStatus : MonoBehaviour
         InstantiateNewBlocks();
         SetTimer();
         SetScore();
+
+        SetGameMode();
     }
 
     void Update()
@@ -145,6 +159,35 @@ public class LevelStatus : MonoBehaviour
                     // While falling down you earned extra seconds, so no game over yet
                     gameOverPending = false;
                 }
+
+                // Make sure only one time random rotation happens
+                // Sometimes it turns and no shapes change their place then it rotates again
+
+                // If game mode is random make some swipes randomly every 5 actions make 1 swipe
+                int randomlySwipeIndex = UnityEngine.Random.Range(0, 5);
+
+                if (randomRotationReady && randomlySwipeIndex == 0)
+                {
+                    randomRotationReady = false;
+                    // Choose random direction for swiping
+                    bool rightSwipe = UnityEngine.Random.Range(0, 2) == 0;
+
+                    if (rightSwipe)
+                    {
+                        nextAngle += 90;
+                        deltaAngle = 3;
+                        rotating = true;
+                        swipeUnlocked = false;
+                    }
+                    else
+                    {
+                        nextAngle -= 90;
+                        deltaAngle = -3;
+                        rotating = true;
+                        swipeUnlocked = false;
+                    }
+                    Invoke("EnableRandomRotation", 1);
+                }
             }
         }
     }
@@ -152,7 +195,7 @@ public class LevelStatus : MonoBehaviour
     public void SwipePalette(DraggedDirections direction)
     {
         // Swipe is finished
-        if (swipeUnlocked)
+        if (swipeUnlocked && player.gameMode != GameModes.random)
         {
             if (direction == DraggedDirections.right)
             {
@@ -211,6 +254,24 @@ public class LevelStatus : MonoBehaviour
     #endregion
 
     #region Private Metods
+    void SetGameMode()
+    {
+        // Hide arrows if randomg game mode and set color
+        if (player.gameMode == GameModes.random)
+        {
+            swipeArrows.SetActive(false);
+            header.GetComponent<SpriteRenderer>().color = randomColor;
+        } else if (player.gameMode == GameModes.infinite)
+        {
+            header.GetComponent<SpriteRenderer>().color = infiniteColor;
+        }
+    }
+
+    void EnableRandomRotation()
+    {
+        randomRotationReady = true;
+    }
+
     void CheckCellsFreeStatus()
     {
         for (int i = 0; i < cells.Length; i++)
