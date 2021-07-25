@@ -5,14 +5,19 @@ public class BlockPart : MonoBehaviour
     LevelStatus levelStatus;
     Cell[] allCells;
 
+    // A square that snaps to cell when dragged
     public GameObject snapPlaceholder;
 
+    // To actiavet snap logic while dragging
     public bool dragging;
 
+    // To count as a block part when it is dragged and dropped on the map
     public bool onMap = true;
+    // To indicate falling down after drag and drop or after palette swipe
     public bool moving = false;
 
     Rigidbody2D rb;
+    // To detect when velocity changes its direction that is block part has hit some obstacle and has to stop
     float prevVelocity;
 
     void Start()
@@ -27,6 +32,7 @@ public class BlockPart : MonoBehaviour
     {
         if (moving)
         {
+            // Hit some obstacle, stop moving
             if (rb.velocity.y > prevVelocity)
             {
                 SnapToCell();
@@ -37,6 +43,7 @@ public class BlockPart : MonoBehaviour
             }
             else
             {
+                // accelerate falling down by 1 unit and reset previous velocity to detect hit
                 prevVelocity = rb.velocity.y;
                 rb.velocity = new Vector3(0, rb.velocity.y - 1, 0);
             }
@@ -72,7 +79,7 @@ public class BlockPart : MonoBehaviour
 
         transform.position = snapPlaceholder.transform.position;
         // Make a block that has just been placed have the same order with other blocks
-        transform.Find("Icon").GetComponent<SpriteRenderer>().sortingOrder = 3;
+        transform.Find("Icon").GetComponent<SpriteRenderer>().sortingOrder = 4;
         levelStatus.GetAllMapBlockParts();
         // False to not move already placed block parts but only this one
         levelStatus.MoveBlockPartsDown(false);
@@ -102,7 +109,10 @@ public class BlockPart : MonoBehaviour
     #region Private Methods
     void GetClosestCell()
     {
+        // Assume that closest cell is the first cell on the palette
+        // Will change as we loop through all cells and get distances
         Cell closestCell = allCells[0];
+        // Random distance greater than normally  it should be so that any cell overwrites this value
         float closestCellDistance = 100;
 
         for (int i = 0; i < allCells.Length; i++)

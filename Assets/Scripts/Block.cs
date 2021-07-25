@@ -66,16 +66,20 @@ public class Block : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHan
 
     public void CreateBlock(GameObject _blockInstantiator)
     {
+        // To keep track of its instantiator incase it is dragged and NOT dropped, to return back
         blockInstantiator = _blockInstantiator;
-        // this is done outside of start and awake methods so its scale gets adjasted to canvas scale
+        // This is done outside of start and awake methods so its scale gets adjasted to canvas scale
         SetInitialValues();
+        // To make the block smaller since it is in the instantiator and not on the map yet
         Shrink();
 
+        // Set a Random color from given spectrum
         Color32 blockColor = new Color32(
             (byte)Random.Range(100, 255),
             (byte)Random.Range(100, 255),
             (byte)Random.Range(100, 255), 255);
 
+        // Initialize earch block part
         for (int i = 0; i < blockParts.transform.childCount; i++)
         {
             blockParts.transform.GetChild(i).GetComponent<BlockPart>().CreateBlockPart(blockColor);
@@ -121,7 +125,7 @@ public class Block : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHan
             {
                 // Make a block that is new appear above all other blocks
                 blockParts.transform.GetChild(i).GetComponent<BlockPart>().dragging = true;
-                blockParts.transform.GetChild(i).Find("Icon").GetComponent<SpriteRenderer>().sortingOrder = 4;
+                blockParts.transform.GetChild(i).Find("Icon").GetComponent<SpriteRenderer>().sortingOrder = 5;
             }
         }
     }

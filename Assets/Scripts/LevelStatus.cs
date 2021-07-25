@@ -7,10 +7,11 @@ using static GlobalVariables;
 public class LevelStatus : MonoBehaviour
 {
     Player player;
+    Navigator navigator;
     GameOverWindow gameOverWindow;
 
     // To change the color of header based on the game mode
-    [SerializeField] GameObject header;
+    [SerializeField] GameObject[] colorfulObjects;
 
     Color32 infiniteColor = new Color32(189, 59, 160, 255);
     Color32 randomColor = new Color32(59, 160, 189, 255);
@@ -62,11 +63,10 @@ public class LevelStatus : MonoBehaviour
     // Incase stuck in the swiping while time is up
     bool gameOverPending;
 
-    // To stop double or tripple rotations
-    bool randomRotationReady;
-
     void Start()
     {
+        navigator = FindObjectOfType<Navigator>();
+
         player = FindObjectOfType<Player>();
         gameOverWindow = FindObjectOfType<GameOverWindow>();
 
@@ -83,6 +83,14 @@ public class LevelStatus : MonoBehaviour
 
     void Update()
     {
+        // START DEBUG
+        // Android back button reacts as escape
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            navigator.LoadMainScene();
+        }
+        // END DEBUG
+
         if (angle != nextAngle)
         {
             angle += deltaAngle;
@@ -142,14 +150,16 @@ public class LevelStatus : MonoBehaviour
         {
             idleBlockParts.Add(part);
             allBlockPartsFell = false;
-            if (idleBlockParts.Count == allMapBlockParts.Count)
+            if (idleBlockParts.Count == allMapBlockParts.Count && idleBlockParts.Count > 0)
             {
-                // Refresh free/occupied status of every cell when all blocks are idle
                 idleBlockParts.Clear();
                 allBlockPartsFell = true;
+                // Refresh free/occupied status of every cell when all blocks are idle
                 CheckCellsFreeStatus();
                 ChectAlignedCells();
 
+                // This is incase the time is up but there are still blocks dropping
+                // Note: if blocks dropped and they scored some value, time will be added and game over will be cancelled
                 if (gameOverPending && seconds == 0)
                 {
                     gameOverPending = false;
@@ -158,35 +168,6 @@ public class LevelStatus : MonoBehaviour
                 {
                     // While falling down you earned extra seconds, so no game over yet
                     gameOverPending = false;
-                }
-
-                // Make sure only one time random rotation happens
-                // Sometimes it turns and no shapes change their place then it rotates again
-
-                // If game mode is random make some swipes randomly every 5 actions make 1 swipe
-                int randomlySwipeIndex = UnityEngine.Random.Range(0, 5);
-
-                if (randomRotationReady && randomlySwipeIndex == 0)
-                {
-                    randomRotationReady = false;
-                    // Choose random direction for swiping
-                    bool rightSwipe = UnityEngine.Random.Range(0, 2) == 0;
-
-                    if (rightSwipe)
-                    {
-                        nextAngle += 90;
-                        deltaAngle = 3;
-                        rotating = true;
-                        swipeUnlocked = false;
-                    }
-                    else
-                    {
-                        nextAngle -= 90;
-                        deltaAngle = -3;
-                        rotating = true;
-                        swipeUnlocked = false;
-                    }
-                    Invoke("EnableRandomRotation", 1);
                 }
             }
         }
@@ -199,17 +180,11 @@ public class LevelStatus : MonoBehaviour
         {
             if (direction == DraggedDirections.right)
             {
-                nextAngle += 90;
-                deltaAngle = 3;
-                rotating = true;
-                swipeUnlocked = false;
+                SwipeRight();
             }
             else if (direction == DraggedDirections.left)
             {
-                nextAngle -= 90;
-                deltaAngle = -3;
-                rotating = true;
-                swipeUnlocked = false;
+                SwipeLeft();
             }
         }
     }
@@ -254,22 +229,39 @@ public class LevelStatus : MonoBehaviour
     #endregion
 
     #region Private Metods
+    void SwipeRight()
+    {
+        nextAngle += 90;
+        deltaAngle = 3;
+        rotating = true;
+        swipeUnlocked = false;
+    }
+
+    void SwipeLeft()
+    {
+        nextAngle -= 90;
+        deltaAngle = -3;
+        rotating = true;
+        swipeUnlocked = false;
+    }
+
     void SetGameMode()
     {
         // Hide arrows if randomg game mode and set color
         if (player.gameMode == GameModes.random)
         {
             swipeArrows.SetActive(false);
-            header.GetComponent<SpriteRenderer>().color = randomColor;
+            for (int i = 0; i < colorfulObjects.Length; i++)
+            {
+                colorfulObjects[i].GetComponent<SpriteRenderer>().color = randomColor;
+            }
         } else if (player.gameMode == GameModes.infinite)
         {
-            header.GetComponent<SpriteRenderer>().color = infiniteColor;
+            for (int i = 0; i < colorfulObjects.Length; i++)
+            {
+                colorfulObjects[i].GetComponent<SpriteRenderer>().color = infiniteColor;
+            }
         }
-    }
-
-    void EnableRandomRotation()
-    {
-        randomRotationReady = true;
     }
 
     void CheckCellsFreeStatus()
@@ -439,10 +431,7 @@ public class LevelStatus : MonoBehaviour
             {
                 for (int k = 0; k < alignedRows.Count; k++)
                 {
-                    //if (!destroyBlockParts.Contains(alignedRows[k]))
-                    //{
                     destroyBlockParts.Add(alignedRows[k]);
-                    //}
                 }
             }
         }
@@ -475,11 +464,35 @@ public class LevelStatus : MonoBehaviour
             }
             destroyBlockParts.Clear();
             Invoke("GetAllMapBlockParts", 1);
+            // Move all map block parts even if they are idle and cant be moved down
             Invoke("MoveAllBlockPartsDown", 1);
         }
         else
         {
             UnlockSwipe();
+
+            if (player.gameMode == GameModes.random)
+            {
+                // If game mode is random make some swipes randomly every 5 actions make 1 swipe
+                int randomlySwipeIndex = UnityEngine.Random.Range(0, 5);
+
+                if (randomlySwipeIndex == 0)
+                {
+                    // Choose random direction for swiping
+                    bool rightSwipe = UnityEngine.Random.Range(0, 2) == 0;
+
+                    if (rightSwipe)
+                    {
+                        //Invoke("SwipeRight", 1);
+                        SwipeRight();
+                    }
+                    else
+                    {
+                        //Invoke("SwipeLeft", 1);
+                        SwipeLeft();
+                    }
+                }
+            }
         }
     }
 
@@ -491,5 +504,4 @@ public class LevelStatus : MonoBehaviour
         }
     }
     #endregion
-
 }
