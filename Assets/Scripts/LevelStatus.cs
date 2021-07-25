@@ -53,7 +53,7 @@ public class LevelStatus : MonoBehaviour
     public int totalScore = 0;
     // Score that we get when aligning blocks
     int score;
-    int seconds = 1000; // Seconds
+    int seconds = 5; // Seconds
     float timer = 0;
     public bool gameOver;
 
@@ -251,15 +251,31 @@ public class LevelStatus : MonoBehaviour
         if (player.gameMode == GameModes.random)
         {
             swipeArrows.SetActive(false);
+
             for (int i = 0; i < colorfulObjects.Length; i++)
             {
-                colorfulObjects[i].GetComponent<SpriteRenderer>().color = randomColor;
+                // Some objects have SpriteRenderer some have Image component
+                if (colorfulObjects[i].GetComponent<SpriteRenderer>() != null)
+                {
+                    colorfulObjects[i].GetComponent<SpriteRenderer>().color = randomColor;
+                } else if (colorfulObjects[i].GetComponent<Image>() != null)
+                {
+                    colorfulObjects[i].GetComponent<Image>().color = randomColor;
+                }
             }
         } else if (player.gameMode == GameModes.infinite)
         {
             for (int i = 0; i < colorfulObjects.Length; i++)
             {
-                colorfulObjects[i].GetComponent<SpriteRenderer>().color = infiniteColor;
+                // Some objects have SpriteRenderer some have Image component
+                if (colorfulObjects[i].GetComponent<SpriteRenderer>() != null)
+                {
+                    colorfulObjects[i].GetComponent<SpriteRenderer>().color = infiniteColor;
+                }
+                else if (colorfulObjects[i].GetComponent<Image>() != null)
+                {
+                    colorfulObjects[i].GetComponent<Image>().color = infiniteColor;
+                }
             }
         }
     }

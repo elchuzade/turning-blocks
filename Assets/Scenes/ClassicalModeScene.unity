@@ -361,6 +361,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7295910465068227949, guid: 90f1c9f1af1a942929affab66f80394b, type: 3}
   m_PrefabInstance: {fileID: 146969887}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &148109252 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1906983086998680958, guid: c75f64d50b8914decbad5d0e5425a6c3, type: 3}
+  m_PrefabInstance: {fileID: 1906983088719049734}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &157089243 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 86966466122199750, guid: e3a45cadae69c4383b8403c6d4afe14d, type: 3}
@@ -2503,6 +2508,7 @@ MonoBehaviour:
   - {fileID: 2132371155}
   - {fileID: 157089243}
   - {fileID: 865732978}
+  - {fileID: 148109252}
   swipeArrows: {fileID: 1387999467}
   scorePrefab: {fileID: 7868651004875590490, guid: 29309207705af430e8836fba4340e5c2, type: 3}
   levelCanvas: {fileID: 244848077}
@@ -2649,10 +2655,6 @@ PrefabInstance:
       propertyPath: levelCanvas
       value: 
       objectReference: {fileID: 244848077}
-    - target: {fileID: 1906983087307094696, guid: c75f64d50b8914decbad5d0e5425a6c3, type: 3}
-      propertyPath: gameOverWindow
-      value: 
-      objectReference: {fileID: 703114573}
     - target: {fileID: 1906983088021182792, guid: c75f64d50b8914decbad5d0e5425a6c3, type: 3}
       propertyPath: m_Camera
       value: 
@@ -2753,10 +2755,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 307517209}
-    - target: {fileID: 8050052573412645699, guid: c75f64d50b8914decbad5d0e5425a6c3, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ClickHomeButton
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c75f64d50b8914decbad5d0e5425a6c3, type: 3}
 --- !u!1001 &4369040505587478338
